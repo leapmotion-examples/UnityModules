@@ -331,6 +331,7 @@ namespace Leap.Unity {
       }
 
       // Optimize for head-mounted tracking if on head-mounted display.
+      _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
       _leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
     }
 

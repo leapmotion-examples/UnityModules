@@ -682,6 +682,8 @@ namespace LeapInternal {
           return eLeapPolicyFlag.eLeapPolicyFlag_AllowPauseResume;
         case Controller.PolicyFlag.POLICY_MAP_POINTS:
           return eLeapPolicyFlag.eLeapPolicyFlag_MapPoints;
+        case Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP:
+          return eLeapPolicyFlag.eLeapPolicyFlag_ScreenTop;
         case Controller.PolicyFlag.POLICY_DEFAULT:
           return 0;
         default:

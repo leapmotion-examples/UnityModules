@@ -712,6 +712,11 @@ namespace Leap {
       /// Allow streaming map point
       /// </summary>
       POLICY_MAP_POINTS = (1 << 7),
+      /// <summary>
+      /// Optimize the tracking for screen-top device.
+      /// @since 5.0.0
+      /// </summary>
+      POLICY_OPTIMIZE_SCREENTOP = (1 << 8),
     }
 
     protected virtual void OnInit(object sender, LeapEventArgs eventArgs) {

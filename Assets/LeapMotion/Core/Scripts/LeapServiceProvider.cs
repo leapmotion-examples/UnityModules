@@ -494,6 +494,7 @@ namespace Leap.Unity {
     protected void destroyController() {
       if (_leapController != null) {
         if (_leapController.IsConnected) {
+          _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_SCREENTOP);
           _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
         }
         _leapController.StopConnection();

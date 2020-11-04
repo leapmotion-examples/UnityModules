@@ -1689,7 +1689,7 @@ MonoBehaviour:
   m_trackingText: {fileID: 920087724}
   m_frameRateText: {fileID: 713154454}
   m_dataFrameRateText: {fileID: 383344159}
-  keyToToggleHMD: 118
+  keyToSwitchViewMode: 118
 --- !u!1 &1966885502
 GameObject:
   m_ObjectHideFlags: 0
