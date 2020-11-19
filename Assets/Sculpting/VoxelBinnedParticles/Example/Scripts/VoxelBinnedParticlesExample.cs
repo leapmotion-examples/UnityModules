@@ -40,7 +40,9 @@ namespace Leap.Unity.Particles {
 
     public ComputeShader _shader;
 
-    public Shader _display;
+    public Shader _display, _splatDisplay;
+
+    public bool drawResampledGrid;
 
     //[SerializeField]
     //public Material _displayMat;
@@ -64,19 +66,27 @@ namespace Leap.Unity.Particles {
       public uint tests;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    private struct SurfaceSplat {
+      public Vector3 position;
+      public Vector3 normal;
+      public Vector3 color;
+    }
+
     // Compute Shader Pass Indices
-    private int _integrate, _resolveCollisions, _accumulate_x, 
-                _accumulate_y, _accumulate_z, _copy, _sort;
+    private int _integrate, _resolveCollisions, _accumulate_x,
+                _accumulate_y, _accumulate_z, _copy, _sort, _spawnSplats;
 
     // Compute Buffers
-    private ComputeBuffer _capsules, _particleFront, _particleBack, 
-                          _count, _boxStart, _boxEnd, _debugData, _argBuffer;
+    private ComputeBuffer _capsules, _particleFront, _particleBack, _count, 
+                          _boxStart, _boxEnd, _debugData, _argBuffer, _surfaceSplats, _splatArgBuffer;
 
     // The array of collision capsules as supplied by the hand tracking
     private Capsule[] _capsuleArray = new Capsule[MAX_CAPSULES];
 
     // The surface material of the particles
-    private Material _displayMat;
+    private Material _displayMat, _splatDisplayMat;
+    private uint[] args = new uint[5];
 
     void OnEnable() {
       // Initialize the Compute Buffers
@@ -87,13 +97,18 @@ namespace Leap.Unity.Particles {
       _boxStart      = new ComputeBuffer(BOX_COUNT    , sizeof(uint));
       _boxEnd        = new ComputeBuffer(BOX_COUNT    , sizeof(uint));
       _debugData     = new ComputeBuffer(MAX_PARTICLES, Marshal.SizeOf(typeof(DebugData)));
+      _surfaceSplats = new ComputeBuffer(BOX_COUNT    , Marshal.SizeOf(typeof(SurfaceSplat)), ComputeBufferType.Append);
+      _surfaceSplats.SetCounterValue(0);
 
-      // Initialize the arg buffers which store the current number of particles
-      _argBuffer     = new ComputeBuffer(5, 5 * sizeof(uint), ComputeBufferType.IndirectArguments);
-      uint[] args = new uint[5];
+      // Initialize the arg buffers which stores the current number of particles
+      _argBuffer = new ComputeBuffer(5, sizeof(uint), ComputeBufferType.IndirectArguments);
       args[0] = (uint)_mesh.GetIndexCount(0);
       args[1] = MAX_PARTICLES;
       _argBuffer.SetData(args);
+
+      // Initialize the arg buffers which stores the current number of splats
+      _splatArgBuffer = new ComputeBuffer(5, 5*sizeof(uint), ComputeBufferType.IndirectArguments);
+      _splatArgBuffer.SetData(new uint[5] { _mesh.GetIndexCount(0), (uint)BOX_COUNT, 0, 0, 0 });
 
       // Initialize the particle counts in each cell
       uint[] counts = new uint[BOX_COUNT];
@@ -103,7 +118,7 @@ namespace Leap.Unity.Particles {
       // Initialize the particles
       Particle[] particles = new Particle[MAX_PARTICLES];
       for (int i = 0; i < MAX_PARTICLES; i++) {
-        Vector3 pos = transform.TransformPoint(Random.insideUnitSphere * 0.2f);
+        Vector3 pos = transform.TransformPoint(Random.insideUnitSphere * 0.4f);
         particles[i] = new Particle() {
           position = pos, prevPosition = pos,
           color = new Vector3(Random.value, Random.value, Random.value)
@@ -119,12 +134,14 @@ namespace Leap.Unity.Particles {
       _accumulate_z      = _shader.FindKernel("Accumulate_Z");
       _copy              = _shader.FindKernel("Copy");
       _sort              = _shader.FindKernel("Sort");
+      _spawnSplats       = _shader.FindKernel("SpawnSplats");
+
 
       // Bind the buffers to the memory of each pass of the compute shader
       foreach (var index in new int[] { _integrate,
                                       _resolveCollisions,
                                       _accumulate_x, _accumulate_y, _accumulate_z,
-                                      _copy, _sort }
+                                      _copy, _sort, _spawnSplats }
       ) {
         _shader.SetBuffer(index, "_Capsules",         _capsules);
         _shader.SetBuffer(index, "_ParticleFront",    _particleFront);
@@ -134,10 +151,16 @@ namespace Leap.Unity.Particles {
         _shader.SetBuffer(index, "_BinEnd",           _boxEnd);
         _shader.SetBuffer(index, "_DebugData",        _debugData);
       }
+      // Bind the Surface Splats Buffer as well
+      _shader  .SetBuffer(_spawnSplats, "_SurfaceSplats", _surfaceSplats);
 
       // Set the Particle Display Material
       _displayMat = new Material(_display);
       _displayMat.SetBuffer("_Particles", _particleFront);
+
+      // Set the Splat Display Material
+      _splatDisplayMat = new Material(_splatDisplay);
+      _splatDisplayMat.SetBuffer("_SurfaceSplats", _surfaceSplats);
     }
 
     void OnDisable() {
@@ -150,6 +173,7 @@ namespace Leap.Unity.Particles {
       if (_argBuffer     != null) _argBuffer    .Release();
       if (_capsules      != null) _capsules     .Release();
       if (_debugData     != null) _debugData    .Release();
+      if (_surfaceSplats != null) _surfaceSplats.Release();
     }
 
     void Update() {
@@ -202,20 +226,40 @@ namespace Leap.Unity.Particles {
         }
       }
 
-      /*
-      DebugData[] data = new DebugData[MAX_PARTICLES];
-      _debugData.GetData(data);
-      Debug.Log("##########");
-      Debug.Log(data[1000].tests);
-      */
+      //DebugData[] data = new DebugData[MAX_PARTICLES];
+      //_debugData.GetData(data);
+      //Debug.Log("##########");
+      //Debug.Log(data[1000].tests);
+
+      // Update Splats
+      _surfaceSplats.SetCounterValue(0);
+      using (new ProfilerSample("Spawn Surface Splats")) {
+        _shader.Dispatch(_spawnSplats, BOX_SIDE / 4, BOX_SIDE / 4, BOX_SIDE / 4);
+      }
+
+      if (Input.GetKeyDown(KeyCode.Space)) {
+        drawResampledGrid = !drawResampledGrid;
+      }
     }
 
     void LateUpdate() {
-      Graphics.DrawMeshInstancedIndirect(_mesh,
-                                          0,
-                                          _displayMat,
-                                          new Bounds(Vector3.zero, Vector3.one * 10000),
-                                          _argBuffer);//, layer: 1, castShadows: UnityEngine.Rendering.ShadowCastingMode.Off, receiveShadows: false);
+
+
+      // Draw Splats
+      if (drawResampledGrid) {
+        ComputeBuffer.CopyCount(_surfaceSplats, _splatArgBuffer, 4);
+        Graphics.DrawMeshInstancedIndirect(_mesh,
+                                           0,
+                                           _splatDisplayMat,
+                                           new Bounds(Vector3.zero, Vector3.one * 10000),
+                                           _splatArgBuffer);//, layer: 1, castShadows: UnityEngine.Rendering.ShadowCastingMode.Off, receiveShadows: false);
+      } else {
+        Graphics.DrawMeshInstancedIndirect(_mesh,
+                                           0,
+                                           _displayMat,
+                                           new Bounds(Vector3.zero, Vector3.one * 10000),
+                                           _argBuffer);//, layer: 1, castShadows: UnityEngine.Rendering.ShadowCastingMode.Off, receiveShadows: false);
+      }
     }
 
   }

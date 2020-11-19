@@ -2351,6 +2351,8 @@ MonoBehaviour:
   _mesh: {fileID: 4300000, guid: d3c658b9d2d991e49944fe238fc8b166, type: 3}
   _shader: {fileID: 7200000, guid: 256fb69a0bba2c946866db9519e5771c, type: 3}
   _display: {fileID: 4800000, guid: fc94d6d2b343b3a4bb9a45f12d1320aa, type: 3}
+  _splatDisplay: {fileID: 4800000, guid: f386f12b678ac7942a2bef5c3722bb43, type: 3}
+  drawResampledGrid: 1
 --- !u!4 &801642166
 Transform:
   m_ObjectHideFlags: 0

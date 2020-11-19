@@ -11,7 +11,7 @@
 #pragma kernel Accumulate_Z
 #pragma kernel Copy
 #pragma kernel Sort
-
+#pragma kernel SpawnSplats
 
 // =========
 // Constants
@@ -47,10 +47,18 @@ struct DebugData {
   uint tests;
 };
 
+struct SurfaceSplat {
+    float3 position;
+    float3 normal;
+    float3 color;
+};
 
 // ========
 // Uniforms
 // ========
+
+// Surface Splats
+AppendStructuredBuffer<SurfaceSplat> _SurfaceSplats;
 
 // The center of the simulation.
 uniform float3 _Center;
@@ -78,6 +86,8 @@ RWStructuredBuffer<uint> _BinEnd;
 
 // A debug data buffer.
 RWStructuredBuffer<DebugData> _DebugData;
+
+
 
 
 // =================
@@ -269,7 +279,7 @@ void Sort(uint3 id : SV_DispatchThreadID) {
 // ------------------
 // Resolve Collisions
 // ------------------
-float mapp(float value, float min1, float max1, float min2, float max2) {
+float map(float value, float min1, float max1, float min2, float max2) {
     // Convert the current value to a percentage
     // 0% - min1, 100% - max1
     float perc = (value - min1) / (max1 - min1);
@@ -281,21 +291,17 @@ void runParticleCollision(uint index, Particle particle, Particle other, inout f
   float3 fromOther = (particle.position - other.position);
   float distSqrd = dot(fromOther, fromOther);
 
-
   // Collision
   if (distSqrd < SQR_RADIUS) {
     float deltalength = sqrt(distSqrd);
     fromOther *= -0.5 * (deltalength - RADIUS) / deltalength;
     depenetration += float4(fromOther, 1);
-    //fromOther *= SQR_RADIUS / (distSqrd + SQR_RADIUS) - 0.5;
-    //depenetration += float4(fromOther, 1);
-
   // Cohesion
   } else if (distSqrd < SQR_RADIUS * 5) {
      float deltalength = sqrt(distSqrd);
      fromOther *= -0.5 * (deltalength - RADIUS) / deltalength;
 
-     float distFromTouching = clamp(mapp(distSqrd, SQR_RADIUS * 5, SQR_RADIUS, 0.0, 1.0), 0.0, 1.0);
+     float distFromTouching = clamp(map(distSqrd, SQR_RADIUS * 5, SQR_RADIUS, 0.0, 1.0), 0.0, 1.0);
      depenetration += float4(fromOther, 1) * 0.02 * distFromTouching;
    }
 }
@@ -449,4 +455,44 @@ void ResolveCollisions(uint3 id : SV_DispatchThreadID) {
 
   //Copy the particle into the front buffer
   _ParticleFront[index] = particle;
+}
+
+
+// ------------------
+// Spawn Splats
+// ------------------
+
+[numthreads(4, 4, 4)]
+void SpawnSplats(uint3 id : SV_DispatchThreadID) {
+    uint index = id.x + id.y * BIN_SIDE_COUNT + id.z * BIN_SIDE_COUNT * BIN_SIDE_COUNT;
+
+    uint box_Start = _BinStart[index];
+    uint box_End   = _BinEnd  [index + 1];
+
+    // Get the current Box Location
+    float3 binPos = ((float3(id) - (float3(BIN_SIDE_COUNT, BIN_SIDE_COUNT, BIN_SIDE_COUNT) * 0.5)) * BIN_WIDTH_METERS) + _Center;
+    // TODO: ADD HALF-WIDTH OFFSET?
+    float binWidthSqrd = BIN_WIDTH_METERS * BIN_WIDTH_METERS;
+
+    // Loop through the particles within the cell, detecting distances
+    float4 averagePosition = float4(0, 0, 0, 0);
+    for (uint i = box_Start; i < box_End; i += 1) {
+        Particle currentParticle = _ParticleBack[i];
+
+        // If this particle is close enough to the cell center
+        float3 offset = binPos - currentParticle.position;
+        float sqrDist = dot(offset, offset);
+        //if (sqrDist > SQR_RADIUS && sqrDist < binWidthSqrd) {
+            averagePosition += float4(currentParticle.position, 1.0);
+        //}
+    }
+
+    if (averagePosition.w > 0.0) {
+        SurfaceSplat splat;
+        splat.position = averagePosition.xyz / averagePosition.w;
+        splat.normal = float3(0.0, 1, 0.0);
+        splat.color  = float3(0.2, 0.2, 0.2);
+        _SurfaceSplats.Append(splat);
+    }
+
 }
