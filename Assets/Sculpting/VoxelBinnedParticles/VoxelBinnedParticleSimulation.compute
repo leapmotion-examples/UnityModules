@@ -1,0 +1,452 @@
+﻿
+
+// =======
+// Kernels
+// =======
+
+#pragma kernel Integrate
+#pragma kernel ResolveCollisions
+#pragma kernel Accumulate_X
+#pragma kernel Accumulate_Y
+#pragma kernel Accumulate_Z
+#pragma kernel Copy
+#pragma kernel Sort
+
+
+// =========
+// Constants
+// =========
+
+// Particle radius and square radius.
+#define RADIUS 0.00583
+#define SQR_RADIUS (RADIUS * RADIUS)
+
+// Voxel binning configuration.
+#define BIN_SIDE_COUNT 64
+#define BIN_TOTAL_COUNT (BIN_SIDE_COUNT * BIN_SIDE_COUNT * BIN_SIDE_COUNT)
+#define BIN_WIDTH_METERS (1.0 / 84.0)
+
+
+// ===============
+// Data Structures
+// ===============
+
+struct Particle {
+  float3 position;
+  float3 prevPosition;
+  float3 color;
+};
+
+struct Capsule {
+  float3 a;
+  float3 b;
+  float radius;
+};
+
+struct DebugData {
+  uint tests;
+};
+
+
+// ========
+// Uniforms
+// ========
+
+// The center of the simulation.
+uniform float3 _Center;
+
+// Uniform collider capsules (e.g. for hands).
+uniform int _CapsuleCount;
+StructuredBuffer<Capsule> _Capsules;
+
+// Uniform collider plane (currently only used for testing).
+uniform float3 _PlanePosition;
+uniform float3 _PlaneNormal;
+
+// Particle data, double-buffered.
+RWStructuredBuffer<Particle> _ParticleFront;
+RWStructuredBuffer<Particle> _ParticleBack;
+
+// After a given particle moves, it may be in a new bin. After depenetration and
+// integration steps, we count the number of particles in each bin anew.
+RWStructuredBuffer<uint> _BinParticleCount;
+
+// The beginning and ends of the particle bins, indexing into the Particle data buffers.
+// We use _BinParticleCount to construct these through the Accumulation and Sort steps.
+RWStructuredBuffer<uint> _BinStart;
+RWStructuredBuffer<uint> _BinEnd;
+
+// A debug data buffer.
+RWStructuredBuffer<DebugData> _DebugData;
+
+
+// =================
+// Utility Functions
+// =================
+
+float noise(float2 n) {
+  return frac(sin(dot(n.xy, float2(12.9898, 78.233)))* 43758.5453);
+}
+
+float3 GetBoxFloatPos(float3 position) {
+    return (position - _Center) / BIN_WIDTH_METERS + float3(BIN_SIDE_COUNT, BIN_SIDE_COUNT, BIN_SIDE_COUNT) * 0.5;
+}
+
+uint3 GetBinPos(float3 position) {
+  return (uint3)GetBoxFloatPos(position);
+}
+
+uint GetBin(uint3 boxPos) {
+  return boxPos.x + boxPos.y * BIN_SIDE_COUNT + boxPos.z * BIN_SIDE_COUNT * BIN_SIDE_COUNT;
+}
+
+uint GetBin(float3 position) {
+  return GetBin(GetBinPos(position));
+}
+
+
+// ============================
+// Simulation Algorithm Kernels
+// ============================
+
+// -----------
+// Integration
+// -----------
+
+// Summary
+// =======
+//
+// Modifies particle data in the front buffer in-place, integrating non-collision forces.
+//
+// The Integrate step performs Verlet integration on particle positions from their
+// previous positions and additionally integrates any global simulation forces such as
+// gravitation.
+//
+[numthreads(64, 1, 1)]
+void Integrate(uint3 id : SV_DispatchThreadID) {
+  uint index = id.x;
+
+  Particle particle = _ParticleFront[index];
+
+  float3 toCenter = (_Center - particle.position);
+  float3 forceToCenter = toCenter / (1 + dot(toCenter, toCenter));
+
+  float3 aroundCenter = cross(_Center - particle.position, float3(0, 1, 0));
+  float3 forceAroundCenter = aroundCenter / (0.1 + dot(toCenter, toCenter));
+
+  {
+    float3 tempPos = particle.position;
+
+    particle.position += 0.95 * (particle.position - particle.prevPosition);
+    //particle.position += forceToCenter * 0.0001;
+    //particle.position += forceAroundCenter * 0.00001;
+    //particle.position.y -= 0.0001;
+
+
+    particle.prevPosition = tempPos;
+  }
+
+  // Increment the count of the new box we have landed in.
+  uint newBox = GetBin(particle.position);
+  InterlockedAdd(_BinParticleCount[newBox], 1);
+
+  _ParticleFront[index] = particle;
+}
+
+// ---------------------------
+// Component-wise Accumulation
+// ---------------------------
+//
+// After the Accumulation steps, _BinStart and _BinEnd represent the 
+
+// Summary
+// =======
+// 
+// TODO: Explain this
+// 
+[numthreads(4, 4, 4)]
+void Accumulate_X(uint3 id : SV_DispatchThreadID)
+{
+  uint start = id.y * BIN_SIDE_COUNT + id.z * BIN_SIDE_COUNT * BIN_SIDE_COUNT;
+  uint index = start + id.x;
+
+  uint sum = 0;
+  for (uint i = start; i <= index; i++) {
+    sum += _BinParticleCount[i];
+  }
+
+  _BinStart[index] = sum;
+}
+
+// Summary
+// =======
+// 
+// TODO: Explain this
+// 
+[numthreads(4, 4, 4)]
+void Accumulate_Y(uint3 id : SV_DispatchThreadID)
+{
+  uint index = id.x + id.y * BIN_SIDE_COUNT + id.z * BIN_SIDE_COUNT * BIN_SIDE_COUNT;
+  uint start = (BIN_SIDE_COUNT - 1) + id.z * BIN_SIDE_COUNT * BIN_SIDE_COUNT;
+
+  uint sum = _BinStart[index];
+  for (uint i = start; i < index; i += BIN_SIDE_COUNT) {
+    sum += _BinStart[i];
+  }
+
+  _BinEnd[index] = sum;
+}
+
+// Summary
+// =======
+// 
+// TODO: Explain this
+// 
+[numthreads(4, 4, 4)]
+void Accumulate_Z(uint3 id : SV_DispatchThreadID)
+{
+  uint index = id.x + id.y * BIN_SIDE_COUNT + id.z * BIN_SIDE_COUNT * BIN_SIDE_COUNT;
+  uint start = (BIN_SIDE_COUNT - 1) + ((BIN_SIDE_COUNT - 1) * BIN_SIDE_COUNT);
+
+  uint sum = _BinEnd[index];
+  for (uint i = start; i < index; i += (BIN_SIDE_COUNT * BIN_SIDE_COUNT)) {
+    sum += _BinEnd[i];
+  }
+
+  _BinStart[index] = sum;
+}
+
+// -----------
+// Copy & Sort
+// -----------
+
+// =======
+// Summary
+//
+// I don't understand why this is called Copy. It doesn't copy anything. It just sets 
+// each _BinEnd to equal the _BinStart indices (zeroing out each bin's length), and
+// resets the particle counts to zero, ready ti be summed again after the Integration
+// step in the next cycle.
+//
+[numthreads(64, 1, 1)]
+void Copy(uint3 id : SV_DispatchThreadID) {
+  uint index = id.x;
+
+  // Set this bin's end index to equal its start index, zeroing out its length.
+  _BinEnd[index] = _BinStart[index];
+
+  // Reset the particle count for this bin.
+  _BinParticleCount[index] = 0;
+}
+
+// =======
+// Summary
+//
+// After the Sort step, _BinStart correctly indexes into the particles array with the
+// beginning of a given bin. Note that _BinEnd may be the same value, indicating an empty
+// bin.
+//
+[numthreads(64, 1, 1)]
+void Sort(uint3 id : SV_DispatchThreadID) {
+  // Determine particle index from thread ID.
+  uint index = id.x;
+
+  // Get particle data at the index from the front buffer.
+  Particle particle = _ParticleFront[index];
+
+  // Determine the correct spatial bin given the particle's position.
+  uint binIdx = GetBin(particle.position);
+
+  // Subtract 1 from the start index for this bin, growing its length by one, since the
+  // end index was set to the start index from the previous step.
+  uint newIdx;
+  InterlockedAdd(_BinStart[binIdx], -1, newIdx);
+  newIdx--;
+
+  _ParticleBack[newIdx] = particle;
+}
+
+// ------------------
+// Resolve Collisions
+// ------------------
+float mapp(float value, float min1, float max1, float min2, float max2) {
+    // Convert the current value to a percentage
+    // 0% - min1, 100% - max1
+    float perc = (value - min1) / (max1 - min1);
+    // Do the same operation backwards with min2 and max2
+    return perc * (max2 - min2) + min2;
+}
+
+void runParticleCollision(uint index, Particle particle, Particle other, inout float4 depenetration) {
+  float3 fromOther = (particle.position - other.position);
+  float distSqrd = dot(fromOther, fromOther);
+
+
+  // Collision
+  if (distSqrd < SQR_RADIUS) {
+    float deltalength = sqrt(distSqrd);
+    fromOther *= -0.5 * (deltalength - RADIUS) / deltalength;
+    depenetration += float4(fromOther, 1);
+    //fromOther *= SQR_RADIUS / (distSqrd + SQR_RADIUS) - 0.5;
+    //depenetration += float4(fromOther, 1);
+
+  // Cohesion
+  } else if (distSqrd < SQR_RADIUS * 5) {
+     float deltalength = sqrt(distSqrd);
+     fromOther *= -0.5 * (deltalength - RADIUS) / deltalength;
+
+     float distFromTouching = clamp(mapp(distSqrd, SQR_RADIUS * 5, SQR_RADIUS, 0.0, 1.0), 0.0, 1.0);
+     depenetration += float4(fromOther, 1) * 0.02 * distFromTouching;
+   }
+}
+
+
+
+//void resolveParticleCollisions3x3(uint index, inout Particle particle) {
+//  uint3 boxPos = GetBinPos(particle.position);
+//
+//  float4 depenetration = float4(0, 0, 0, 0);
+//  uint collisions = 0;
+//  for (int dx = -1; dx <= 1; dx++) {
+//    for (int dy = -1; dy <= 1; dy++) {
+//      for (int dz = -1; dz <= 1; dz++) {
+//        uint3 deltaBoxPos = boxPos + uint3(dx, dy, dz);
+//        uint deltaBox = GetBin(deltaBoxPos);
+//
+//        uint start = _BinStart[deltaBox];
+//        uint end = _BinEnd[deltaBox];
+//
+//        for (uint i = start; i < end; i++) {
+//          if (i == index) continue;
+//
+//          Particle other = _ParticleBack[i];
+//          runParticleCollision(index, particle, other, depenetration);
+//        }
+//      }
+//    }
+//  }
+//
+//  if (depenetration.w > 0) {
+//    particle.position += depenetration.xyz / depenetration.w;
+//  }
+//}
+
+void doParticleForeach(uint index, uint start, uint end, Particle particle, inout float4 depenetration) {
+  for (uint i = start; i < end; i += 1) {
+    Particle other = _ParticleBack[i];
+    runParticleCollision(index, particle, other, depenetration);
+  }
+}
+
+void resolveParticleCollisions2x2(uint index, inout Particle particle) {
+  float3 boxFloatPos = GetBoxFloatPos(particle.position);
+  uint3 boxPos = (uint3)boxFloatPos;
+
+  int3 offset;
+  offset.x = 0;
+  offset.y = frac(boxFloatPos.y) > 0.5 ? 1 : -1;
+  offset.z = frac(boxFloatPos.z) > 0.5 ? 1 : -1;
+
+  boxPos.x += (frac(boxFloatPos.x) < 0.5) ? -1 : 0;
+
+  float4 depenetration = float4(0, 0, 0, 0);
+
+  int boxA = GetBin(boxPos + int3(0, offset.y, 0));
+  int boxA_Start = _BinStart[boxA];
+  int boxA_End = _BinEnd[boxA + 1];
+
+  doParticleForeach(index, boxA_Start, boxA_End, particle, depenetration);
+
+  int boxB = GetBin(boxPos + int3(0, 0, offset.z));
+  int boxB_Start = _BinStart[boxB];
+  int boxB_End = _BinEnd[boxB + 1];
+
+  doParticleForeach(index, boxB_Start, boxB_End, particle, depenetration);
+
+  int boxC = GetBin(boxPos + int3(0, offset.y, offset.z));
+  int boxC_Start = _BinStart[boxC];
+  int boxC_End = _BinEnd[boxC + 1];
+
+  doParticleForeach(index, boxC_Start, boxC_End, particle, depenetration);
+
+  int boxD = GetBin(boxPos + int3(0, 0, 0));
+  uint boxD_Start = _BinStart[boxD];
+  uint boxD_End = index;
+
+  doParticleForeach(index, boxD_Start, boxD_End, particle, depenetration);
+
+  uint boxE_Start = index + 1;
+  uint boxE_End = _BinEnd[boxD + 1];
+
+  doParticleForeach(index, boxE_Start, boxE_End, particle, depenetration);
+
+  if (depenetration.w > 0) {
+    particle.position += depenetration.xyz / depenetration.w;
+  }
+}
+
+[numthreads(64, 1, 1)]
+void ResolveCollisions(uint3 id : SV_DispatchThreadID) {
+  uint index = id.x;
+
+  //Grab the particle from the front buffer
+  Particle particle = _ParticleBack[index];
+
+  float3 originalVel = particle.position - particle.prevPosition;
+
+  //resolveParticleCollisions3x3(index, particle);
+  resolveParticleCollisions2x2(index, particle);
+
+  float3 newVel = particle.position - particle.prevPosition;
+  float foamFactor = max(0, length(originalVel) - length(newVel));
+  particle.color = lerp(particle.color, float3(0, 0, 1), 0.001);
+  particle.color += 120 * foamFactor;
+
+  for (int i = 0; i < _CapsuleCount; i++) {
+    Capsule capsule = _Capsules[i];
+
+    float3 ba = capsule.b - capsule.a;
+    float3 anchor = lerp(capsule.a, capsule.b, saturate(dot(particle.position - capsule.a, ba) / dot(ba, ba)));
+    float3 delta = particle.position - anchor;
+
+    if (length(delta) > 0) {
+      particle.position = lerp(particle.position, anchor + normalize(delta) * max(capsule.radius, length(delta)), 0.09);
+    }
+  }
+
+  float boxSize = 0.3;
+
+  float clampHeight = 0.3;
+  float clampRadius = 0.3;
+
+  //BOX
+  //float3 clamped = clamp(particle.position, -boxSize, boxSize);
+
+  //CYLINDER
+  float3 clamped = particle.position -_Center;
+  clamped.y = clamp(clamped.y, -clampHeight, clampHeight);
+  clamped.xz = normalize(clamped.xz) * min(clampRadius, length(clamped.xz));
+
+  //SPHERE
+  //float3 clamped = normalize(particle.position) * min(clampRadius, length(particle.position));
+
+  clamped += _Center;
+
+  float3 fromPlane = clamped - _PlanePosition;
+  float alongPlane = dot(fromPlane, _PlaneNormal);
+  if (alongPlane < 0) {
+    clamped = lerp(clamped, clamped - _PlaneNormal * alongPlane, 0.05);
+  }
+
+
+
+  particle.position += 2 * (clamped - particle.position);
+
+  
+
+  float3 disp = particle.position - particle.prevPosition;
+  //particle.color = lerp(particle.color, abs(70 * disp), 0.05);
+
+  //Copy the particle into the front buffer
+  _ParticleFront[index] = particle;
+}
