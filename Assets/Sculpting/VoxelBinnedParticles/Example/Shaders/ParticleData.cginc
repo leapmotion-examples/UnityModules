@@ -15,6 +15,8 @@ struct Particle {
   float3 position;
   float3 prevPosition;
   float3 color;
+  float3 primaryAxis;
+  float3 secondaryAxis;
 };
 
 struct SurfaceSplat {

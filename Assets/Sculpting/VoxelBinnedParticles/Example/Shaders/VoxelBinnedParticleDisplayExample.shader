@@ -33,19 +33,22 @@
 
 		struct Input {
 			float2 uv_MainTex;
-      float4 color : COLOR;
+            float4 color : COLOR;
 		};
 
-    void setup()
-    {
+    void setup() {
 #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
       Particle particle = _Particles[unity_InstanceID];
 
       float3 pos = particle.position;
 
-      unity_ObjectToWorld._11_21_31_41 = float4(1, 0, 0, 0);
-      unity_ObjectToWorld._12_22_32_42 = float4(0, 1, 0, 0);
-      unity_ObjectToWorld._13_23_33_43 = float4(0, 0, 1, 0);
+      //unity_ObjectToWorld._11_21_31_41 = float4(1, 0, 0, 0);
+      //unity_ObjectToWorld._12_22_32_42 = float4(0, 1, 0, 0);
+      //unity_ObjectToWorld._13_23_33_43 = float4(0, 0, 1, 0);
+      float3 normal = cross(particle.primaryAxis, particle.secondaryAxis);
+      unity_ObjectToWorld._11_21_31_41 = float4(particle.primaryAxis.x, particle.secondaryAxis.x, normal.x, 0);
+      unity_ObjectToWorld._12_22_32_42 = float4(particle.primaryAxis.y, particle.secondaryAxis.y, normal.y, 0);
+      unity_ObjectToWorld._13_23_33_43 = float4(particle.primaryAxis.z, particle.secondaryAxis.z, normal.z, 0);
       unity_ObjectToWorld._14_24_34_44 = float4(pos.xyz, 1);
       unity_WorldToObject = unity_ObjectToWorld;
       unity_WorldToObject._14_24_34 *= -1;
@@ -58,9 +61,10 @@
 
 #ifdef SHADER_API_D3D11
       Particle p = _Particles[v.instanceID];
-      float3 vel = p.position - p.prevPosition;
+      //float3 vel = p.position - p.prevPosition;
       v.vertex.xyz *= RADIUS * 0.6666;
       v.color = float4(p.color, 1);
+      //v.normal = cross(p.primaryAxis, p.secondaryAxis);
 #else
       v.vertex = 0;
       v.color = 1;

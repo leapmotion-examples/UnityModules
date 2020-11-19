@@ -52,6 +52,8 @@ namespace Leap.Unity.Particles {
       public Vector3 position;
       public Vector3 prevPosition;
       public Vector3 color;
+      public Vector3 primaryAxis;
+      public Vector3 secondaryAxis;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -89,6 +91,29 @@ namespace Leap.Unity.Particles {
     private uint[] args = new uint[5];
 
     void OnEnable() {
+      // Construct the Single Triangle Splat Mesh
+      Mesh tri = new Mesh();
+      tri.vertices = new Vector3[] { 
+        new Vector3(-0.5f, 0.0f, 0.0f), 
+        new Vector3( 0.5f, 0.0f, 0.0f), 
+        new Vector3( 0.0f, 1.0f, 0.0f),
+        new Vector3(-0.5f, 0.0f, 0.0f),
+        new Vector3( 0.5f, 0.0f, 0.0f),
+        new Vector3( 0.0f, 1.0f, 0.0f)};
+      tri.uv = new Vector2[] {
+        new Vector2(0.0f, 0.0f),
+        new Vector2(1.0f, 0.0f),
+        new Vector2(0.5f, 1.0f),
+        new Vector2(0.0f, 0.0f),
+        new Vector2(1.0f, 0.0f),
+        new Vector2(0.5f, 1.0f)};
+      tri.triangles = new int[] { 2, 1, 0, 3, 4, 5 };
+      tri.normals = new Vector3[] { 
+        -Vector3.forward, -Vector3.forward, -Vector3.forward,
+         Vector3.forward,  Vector3.forward,  Vector3.forward };
+      tri.UploadMeshData(false);
+      _mesh = tri;
+
       // Initialize the Compute Buffers
       _capsules      = new ComputeBuffer(MAX_CAPSULES , Marshal.SizeOf(typeof(Capsule)));
       _particleFront = new ComputeBuffer(MAX_PARTICLES, Marshal.SizeOf(typeof(Particle)));
@@ -117,11 +142,13 @@ namespace Leap.Unity.Particles {
 
       // Initialize the particles
       Particle[] particles = new Particle[MAX_PARTICLES];
+      Quaternion particleOrientation = Quaternion.Euler(0f, 0f, 60f);
       for (int i = 0; i < MAX_PARTICLES; i++) {
         Vector3 pos = transform.TransformPoint(Random.insideUnitSphere * 0.4f);
         particles[i] = new Particle() {
           position = pos, prevPosition = pos,
-          color = new Vector3(Random.value, Random.value, Random.value)
+          color = new Vector3(Random.value, Random.value, Random.value),
+          primaryAxis = particleOrientation * Vector3.right, secondaryAxis = particleOrientation * Vector3.up
         };
       }
       _particleFront.SetData(particles);
@@ -165,15 +192,16 @@ namespace Leap.Unity.Particles {
 
     void OnDisable() {
       // Deallocate the GPU Compute Buffers
-      if (_particleFront != null) _particleFront.Release();
-      if (_particleBack  != null) _particleBack .Release();
-      if (_count         != null) _count        .Release();
-      if (_boxStart      != null) _boxStart     .Release();
-      if (_boxEnd        != null) _boxEnd       .Release();
-      if (_argBuffer     != null) _argBuffer    .Release();
-      if (_capsules      != null) _capsules     .Release();
-      if (_debugData     != null) _debugData    .Release();
-      if (_surfaceSplats != null) _surfaceSplats.Release();
+      if (_particleFront  != null) _particleFront .Release();
+      if (_particleBack   != null) _particleBack  .Release();
+      if (_count          != null) _count         .Release();
+      if (_boxStart       != null) _boxStart      .Release();
+      if (_boxEnd         != null) _boxEnd        .Release();
+      if (_argBuffer      != null) _argBuffer     .Release();
+      if (_capsules       != null) _capsules      .Release();
+      if (_debugData      != null) _debugData     .Release();
+      if (_surfaceSplats  != null) _surfaceSplats .Release(); 
+      if (_splatArgBuffer != null) _splatArgBuffer.Release();
     }
 
     void Update() {

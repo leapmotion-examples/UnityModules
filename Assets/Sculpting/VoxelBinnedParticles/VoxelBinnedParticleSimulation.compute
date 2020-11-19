@@ -35,6 +35,8 @@ struct Particle {
   float3 position;
   float3 prevPosition;
   float3 color;
+  float3 primaryAxis;
+  float3 secondaryAxis;
 };
 
 struct Capsule {
@@ -287,60 +289,37 @@ float map(float value, float min1, float max1, float min2, float max2) {
     return perc * (max2 - min2) + min2;
 }
 
-void runParticleCollision(uint index, Particle particle, Particle other, inout float4 depenetration) {
+void runParticleCollision(uint index, Particle particle, Particle other, 
+    inout float4 depenetration, inout float3 primaryAxis, inout float3 secondaryAxis) {
   float3 fromOther = (particle.position - other.position);
-  float distSqrd = dot(fromOther, fromOther);
+  float  distSqrd  = dot(fromOther, fromOther);
 
-  // Collision
-  if (distSqrd < SQR_RADIUS) {
-    float deltalength = sqrt(distSqrd);
-    fromOther *= -0.5 * (deltalength - RADIUS) / deltalength;
-    depenetration += float4(fromOther, 1);
-  // Cohesion
-  } else if (distSqrd < SQR_RADIUS * 5) {
-     float deltalength = sqrt(distSqrd);
-     fromOther *= -0.5 * (deltalength - RADIUS) / deltalength;
+  // Non-local Effects
+  if (distSqrd < SQR_RADIUS * 5) {
+      float deltalength = sqrt(distSqrd);
+      fromOther *= -0.5 * (deltalength - RADIUS) / deltalength;
+      if (distSqrd < SQR_RADIUS) {
+          // Collision
+          depenetration += float4(fromOther, 1);
+      } else {
+          // Cohesion
+          float distFromTouching = clamp(map(distSqrd, SQR_RADIUS * 5, SQR_RADIUS, 0.0, 1.0), 0.0, 1.0);
+          depenetration += float4(fromOther, 1) * 0.02 * distFromTouching;
+      }
 
-     float distFromTouching = clamp(map(distSqrd, SQR_RADIUS * 5, SQR_RADIUS, 0.0, 1.0), 0.0, 1.0);
-     depenetration += float4(fromOther, 1) * 0.02 * distFromTouching;
-   }
+      // Fit a plane to the nearby particles
+      float3 localPoint = other.position - particle.position;
+      primaryAxis      += dot(particle.primaryAxis  , localPoint) * localPoint;
+      secondaryAxis    += dot(particle.secondaryAxis, localPoint) * localPoint;
+  }
+
 }
 
-
-
-//void resolveParticleCollisions3x3(uint index, inout Particle particle) {
-//  uint3 boxPos = GetBinPos(particle.position);
-//
-//  float4 depenetration = float4(0, 0, 0, 0);
-//  uint collisions = 0;
-//  for (int dx = -1; dx <= 1; dx++) {
-//    for (int dy = -1; dy <= 1; dy++) {
-//      for (int dz = -1; dz <= 1; dz++) {
-//        uint3 deltaBoxPos = boxPos + uint3(dx, dy, dz);
-//        uint deltaBox = GetBin(deltaBoxPos);
-//
-//        uint start = _BinStart[deltaBox];
-//        uint end = _BinEnd[deltaBox];
-//
-//        for (uint i = start; i < end; i++) {
-//          if (i == index) continue;
-//
-//          Particle other = _ParticleBack[i];
-//          runParticleCollision(index, particle, other, depenetration);
-//        }
-//      }
-//    }
-//  }
-//
-//  if (depenetration.w > 0) {
-//    particle.position += depenetration.xyz / depenetration.w;
-//  }
-//}
-
-void doParticleForeach(uint index, uint start, uint end, Particle particle, inout float4 depenetration) {
+void doParticleForeach(uint index, uint start, uint end, Particle particle, 
+    inout float4 depenetration, inout float3 primaryAxis, inout float3 secondaryAxis) {
   for (uint i = start; i < end; i += 1) {
     Particle other = _ParticleBack[i];
-    runParticleCollision(index, particle, other, depenetration);
+    runParticleCollision(index, particle, other, depenetration, primaryAxis, secondaryAxis);
   }
 }
 
@@ -356,39 +335,53 @@ void resolveParticleCollisions2x2(uint index, inout Particle particle) {
   boxPos.x += (frac(boxFloatPos.x) < 0.5) ? -1 : 0;
 
   float4 depenetration = float4(0, 0, 0, 0);
+  float3 primaryAxis   = particle.primaryAxis;
+  float3 secondaryAxis = particle.secondaryAxis;
 
   int boxA = GetBin(boxPos + int3(0, offset.y, 0));
   int boxA_Start = _BinStart[boxA];
   int boxA_End = _BinEnd[boxA + 1];
 
-  doParticleForeach(index, boxA_Start, boxA_End, particle, depenetration);
+  doParticleForeach(index, boxA_Start, boxA_End, particle, depenetration, primaryAxis, secondaryAxis);
 
   int boxB = GetBin(boxPos + int3(0, 0, offset.z));
   int boxB_Start = _BinStart[boxB];
   int boxB_End = _BinEnd[boxB + 1];
 
-  doParticleForeach(index, boxB_Start, boxB_End, particle, depenetration);
+  doParticleForeach(index, boxB_Start, boxB_End, particle, depenetration, primaryAxis, secondaryAxis);
 
   int boxC = GetBin(boxPos + int3(0, offset.y, offset.z));
   int boxC_Start = _BinStart[boxC];
   int boxC_End = _BinEnd[boxC + 1];
 
-  doParticleForeach(index, boxC_Start, boxC_End, particle, depenetration);
+  doParticleForeach(index, boxC_Start, boxC_End, particle, depenetration, primaryAxis, secondaryAxis);
 
   int boxD = GetBin(boxPos + int3(0, 0, 0));
   uint boxD_Start = _BinStart[boxD];
   uint boxD_End = index;
 
-  doParticleForeach(index, boxD_Start, boxD_End, particle, depenetration);
+  doParticleForeach(index, boxD_Start, boxD_End, particle, depenetration, primaryAxis, secondaryAxis);
 
   uint boxE_Start = index + 1;
   uint boxE_End = _BinEnd[boxD + 1];
 
-  doParticleForeach(index, boxE_Start, boxE_End, particle, depenetration);
+  doParticleForeach(index, boxE_Start, boxE_End, particle, depenetration, primaryAxis, secondaryAxis);
 
   if (depenetration.w > 0) {
     particle.position += depenetration.xyz / depenetration.w;
   }
+
+  // Fit a normal plane around this particle
+  primaryAxis            = primaryAxis   / length(primaryAxis);
+  secondaryAxis          = secondaryAxis - (dot(primaryAxis, secondaryAxis) * primaryAxis); // Project onto plane
+  secondaryAxis          = secondaryAxis / length(secondaryAxis);
+  particle.primaryAxis   = primaryAxis;
+  particle.secondaryAxis = secondaryAxis;
+
+  //particle.primaryAxis    = cross(float3(0,1,0), depenetration.xyz);
+  //particle.secondaryAxis  = cross(particle.primaryAxis, depenetration.xyz);
+  //particle.primaryAxis   /= length(particle.primaryAxis);
+  //particle.secondaryAxis /= length(particle.secondaryAxis);
 }
 
 [numthreads(64, 1, 1)]
@@ -444,11 +437,7 @@ void ResolveCollisions(uint3 id : SV_DispatchThreadID) {
     clamped = lerp(clamped, clamped - _PlaneNormal * alongPlane, 0.05);
   }
 
-
-
   particle.position += 2 * (clamped - particle.position);
-
-  
 
   float3 disp = particle.position - particle.prevPosition;
   //particle.color = lerp(particle.color, abs(70 * disp), 0.05);
