@@ -271,10 +271,10 @@ namespace Leap.Unity.Geometry {
       divisions = Mathf.Max(1, divisions);
       if (divisions > 1) {
         var frac = 1 / divisions;
-        drawDividedLines(drawLineFunc, step: frac, a, b);
-        drawDividedLines(drawLineFunc, step: frac, b, c);
-        drawDividedLines(drawLineFunc, step: frac, c, d);
-        drawDividedLines(drawLineFunc, step: frac, d, a);
+        drawDividedLines(drawLineFunc, step: frac, a: a, b: b);
+        drawDividedLines(drawLineFunc, step: frac, a: b, b: c);
+        drawDividedLines(drawLineFunc, step: frac, a: c, b: d);
+        drawDividedLines(drawLineFunc, step: frac, a: d, b: a);
       }
       else {
         drawLineFunc(a, b);
@@ -315,10 +315,10 @@ namespace Leap.Unity.Geometry {
       int numRectLines = 8;
       for (int i = 0; i < numRectLines; i++) {
         var shrinkMul = (Vector2.one - shrink.CompMul(invRadii) * i);
-        drawer.DrawLine(a * shrinkMul, b * shrinkMul);
-        drawer.DrawLine(b * shrinkMul, c * shrinkMul);
-        drawer.DrawLine(c * shrinkMul, d * shrinkMul);
-        drawer.DrawLine(d * shrinkMul, a * shrinkMul);
+        drawer.DrawLine(shrinkMul.CompMul(a), shrinkMul.CompMul(b));
+        drawer.DrawLine(shrinkMul.CompMul(b), shrinkMul.CompMul(c));
+        drawer.DrawLine(shrinkMul.CompMul(c), shrinkMul.CompMul(d));
+        drawer.DrawLine(shrinkMul.CompMul(d), shrinkMul.CompMul(a));
       }
 
       drawer.DrawLine(a, c);

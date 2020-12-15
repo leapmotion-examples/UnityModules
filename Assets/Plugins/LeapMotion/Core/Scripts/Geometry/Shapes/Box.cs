@@ -118,20 +118,20 @@ namespace Leap.Unity.Geometry {
       divisions = Mathf.Max(1, divisions);
       var frac = 1f / divisions;
 
-      drawDividedLines(draw: drawLineFunc, step: frac, corner000, corner100);
-      drawDividedLines(draw: drawLineFunc, step: frac, corner000, corner010);
-      drawDividedLines(draw: drawLineFunc, step: frac, corner110, corner100);
-      drawDividedLines(draw: drawLineFunc, step: frac, corner110, corner010);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner000, b: corner100);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner000, b: corner010);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner110, b: corner100);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner110, b: corner010);
 
-      drawDividedLines(draw: drawLineFunc, step: frac, corner000, corner001);
-      drawDividedLines(draw: drawLineFunc, step: frac, corner100, corner101);
-      drawDividedLines(draw: drawLineFunc, step: frac, corner010, corner011);
-      drawDividedLines(draw: drawLineFunc, step: frac, corner110, corner111);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner000, b: corner001);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner100, b: corner101);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner010, b: corner011);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner110, b: corner111);
 
-      drawDividedLines(draw: drawLineFunc, step: frac, corner001, corner101);
-      drawDividedLines(draw: drawLineFunc, step: frac, corner001, corner011);
-      drawDividedLines(draw: drawLineFunc, step: frac, corner111, corner101);
-      drawDividedLines(draw: drawLineFunc, step: frac, corner111, corner011);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner001, b: corner101);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner001, b: corner011);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner111, b: corner101);
+      drawDividedLines(draw: drawLineFunc, step: frac, a: corner111, b: corner011);
     }
 
     private void drawDividedLines(System.Action<Vector3, Vector3> draw,

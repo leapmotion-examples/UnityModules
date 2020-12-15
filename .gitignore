@@ -25,6 +25,8 @@ ExportedObj/
 Temp/
 [Bb]uild/
 [Bb]uilds/
+Assets/XR/
+Assets/XR.meta
 
 .vs/
 .vscode/

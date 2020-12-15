@@ -299,6 +299,22 @@ namespace Leap.Unity {
     }
 
     /// <summary>
+    /// Returns an unsmoothed ray representing the general reaching/interaction intent direction.
+    /// </summary>
+    public static Ray HandRay(this Hand hand, Transform headTransform) {
+      Quaternion shoulderYaw      = Quaternion.Euler(0f, headTransform.rotation.eulerAngles.y, 0f);
+      // Approximate shoulder position with magic values.
+      Vector3 ProjectionOrigin = headTransform.position
+                                  + (shoulderYaw * (new Vector3(0f, -0.13f, -0.1f)
+                                  + Vector3.left * 0.15f * (hand.IsLeft ? 1f : -1f)));
+      // Compare against this
+      //Vector3 ProjectionOrigin    = headTransform.position + shoulderYaw * 
+      //                                new Vector3(0.15f * (hand.IsLeft ? -1f : 1f), -0.13f, 0.05f);
+      Vector3 ProjectionDirection = hand.Fingers[1].bones[0].NextJoint.ToVector3() - ProjectionOrigin;
+      return new Ray(ProjectionOrigin, ProjectionDirection);
+    }
+
+    /// <summary>
     /// Transforms a bone by a position and rotation.
     /// </summary>
     public static void Transform(this Bone bone, Vector3 position, Quaternion rotation) {

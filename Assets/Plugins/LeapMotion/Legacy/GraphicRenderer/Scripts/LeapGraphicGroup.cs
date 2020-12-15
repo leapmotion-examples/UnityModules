@@ -24,7 +24,7 @@ namespace Leap.Unity.GraphicalRenderer {
 
     #region INSPECTOR FIELDS
     [SerializeField]
-    private string _groupName = default;
+    private string _groupName = default(string);
 
     [SerializeField]
     private RenderingMethodReference _renderingMethod = new RenderingMethodReference();
@@ -44,7 +44,7 @@ namespace Leap.Unity.GraphicalRenderer {
     private List<SupportInfo> _supportInfo = new List<SupportInfo>();
 
     [SerializeField, HideInInspector]
-    private bool _addRemoveSupported = default;
+    private bool _addRemoveSupported = default(bool);
 
     private HashSet<LeapGraphic> _toAttach = new HashSet<LeapGraphic>();
     private HashSet<LeapGraphic> _toDetach = new HashSet<LeapGraphic>();

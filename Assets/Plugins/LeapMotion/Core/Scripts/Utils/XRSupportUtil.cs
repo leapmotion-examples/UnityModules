@@ -235,7 +235,9 @@ namespace Leap.Unity {
       #endif
     }
 
+    #if UNITY_2020_1_OR_NEWER
     static List<Vector3> _boundaryPoints = new List<Vector3>();
+    #endif
     /// <summary> Returns whether the playspace is larger than 1m on its shortest side. </summary>
     public static bool IsLargePlayspace() {
       #if UNITY_2020_1_OR_NEWER // Oculus reports a floor centered space now...

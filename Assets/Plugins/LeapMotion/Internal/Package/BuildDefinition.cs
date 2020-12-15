@@ -52,7 +52,9 @@ namespace Leap.Unity.Packaging {
 
     [System.Serializable]
     public struct BuildPlayerSettings {
+      #if UNITY_2018_3_OR_NEWER
       public FullScreenMode fullScreenMode;
+      #endif
       public int defaultScreenWidth;
       public int defaultScreenHeight;
       public bool resizableWindow;
@@ -61,7 +63,9 @@ namespace Leap.Unity.Packaging {
       #endif
       public static BuildPlayerSettings Default() {
         return new BuildPlayerSettings() {
+          #if UNITY_2018_3_OR_NEWER
           fullScreenMode = FullScreenMode.Windowed,
+          #endif
           defaultScreenWidth = 800,
           defaultScreenHeight = 500,
           resizableWindow = true,
@@ -118,7 +122,6 @@ namespace Leap.Unity.Packaging {
         if (!Directory.Exists(exportFolder)) {
           try {
             // Simplify any ".." relative-ness.
-            var info = Directory.CreateDirectory(exportFolder);
             exportFolder = new DirectoryInfo(exportFolder).FullName;
           } catch (Exception) {
             UnityEngine.Debug.Log("Could not build " + DefinitionName + " because " +
@@ -166,7 +169,9 @@ namespace Leap.Unity.Packaging {
           getFileSuffix(target);
         
         if (_useSpecificPlayerSettings) {
+          #if UNITY_2018_3_OR_NEWER
           var origFullscreenMode = PlayerSettings.fullScreenMode;
+          #endif
           var origDefaultWidth = PlayerSettings.defaultScreenWidth;
           var origDefaultHeight = PlayerSettings.defaultScreenHeight;
           var origResizableWindow = PlayerSettings.resizableWindow;
@@ -174,7 +179,9 @@ namespace Leap.Unity.Packaging {
           var origResDialogSetting = PlayerSettings.displayResolutionDialog;
           #endif
           try {
+            #if UNITY_2018_3_OR_NEWER
             PlayerSettings.fullScreenMode = _playerSettings.fullScreenMode;
+            #endif
             PlayerSettings.defaultScreenWidth = _playerSettings.defaultScreenWidth;
             PlayerSettings.defaultScreenHeight =
             _playerSettings.defaultScreenHeight;
@@ -189,7 +196,9 @@ namespace Leap.Unity.Packaging {
             callPostBuildExtensions(fullBuildPath, crashWithCodeOnFail);
           }
           finally {
+            #if UNITY_2018_3_OR_NEWER
             PlayerSettings.fullScreenMode = origFullscreenMode;
+            #endif
             PlayerSettings.defaultScreenWidth = origDefaultWidth;
             PlayerSettings.defaultScreenHeight = origDefaultHeight;
             PlayerSettings.resizableWindow = origResizableWindow;

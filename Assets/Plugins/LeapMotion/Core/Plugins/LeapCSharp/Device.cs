@@ -8,8 +8,7 @@
 
 namespace Leap {
   using System;
-    using System.Data;
-    using LeapInternal;
+  using LeapInternal;
 
   /// <summary>
   /// The Device class represents a physically connected device.

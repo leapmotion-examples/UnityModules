@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using Leap.Unity.Geometry;
 
 namespace Leap.Unity.Splines {
 
@@ -77,7 +76,11 @@ namespace Leap.Unity.Splines {
           _outputBuffer.Add(interpolateRationalBSpline(_pointsBuffer,
             _weightsBuffer, usePolyDegree, _knotVectorBuffer, t));
         }
+      }
+    }
 
+    protected void OnDrawGizmos() {
+      if (_pointsBuffer.Count > 1) {
         var currFraction = 0f;
         var fractionStep = 1f / (_outputBuffer.Count - 1);
         var start = 0;

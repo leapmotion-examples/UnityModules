@@ -1,0 +1,26 @@
+{
+    "name": "LeapMotion",
+    "references": [
+        "GUID:2ee0542102ac1084e8d9a910885c1e81",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "GUID:2bafac87e7f4b9b418d9448d219b01ab",
+        "GUID:ba171b3dd2a51234ab864770f99741a5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.xr.legacyinputhelpers",
+            "expression": "1.0",
+            "define": "XR_LEGACY_INPUT_AVAILABLE"
+        }
+    ]
+}

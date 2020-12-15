@@ -453,9 +453,7 @@ namespace Leap.LeapCSharp.Tests {
         IntPtr device;
         result = LeapC.OpenDevice(deviceRef, out device);
         Assert.AreEqual(eLeapRS.eLeapRS_Success, result, "OpenDevice Call successful");
-        UInt64 setFlags = 0;
-        UInt64 clearFlags = 0;
-        UInt64 priorFlags = 0;
+        //UInt64 setFlags = 0, clearFlags = 0, priorFlags = 0;
         //result = LeapC.SetDeviceFlags(device, setFlags, clearFlags, out priorFlags);
         Assert.AreEqual(eLeapRS.eLeapRS_Success, result, "SetDeviceFlags Call successful");
       }

@@ -26,7 +26,7 @@ namespace Leap.Unity.GraphicalRenderer {
     public const float SCALE_CONSTANT = 0.001f;
 
     [EditTimeOnly, SerializeField]
-    private Font _font = default;
+    private Font _font = default(Font);
 
     [EditTimeOnly, SerializeField]
     private float _dynamicPixelsPerUnit = 1.0f;
@@ -39,7 +39,7 @@ namespace Leap.Unity.GraphicalRenderer {
 
     [Header("Rendering Settings")]
     [EditTimeOnly, SerializeField]
-    private Shader _shader = default;
+    private Shader _shader = default(Shader);
 
     [EditTimeOnly, SerializeField]
     private float _scale = 1f;

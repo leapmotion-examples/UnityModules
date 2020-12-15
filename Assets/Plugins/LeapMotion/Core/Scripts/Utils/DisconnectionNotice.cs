@@ -34,14 +34,16 @@ namespace Leap.Unity{
     private Controller leap_controller_;
     private float fadedIn = 0.0f;
     private int frames_disconnected_ = 0;
+    private UnityEngine.UI.Image _image;
   
     void Start() {
       leap_controller_ = new Controller();
+      if (_image == null) { _image = GetComponent<UnityEngine.UI.Image>(); }
       SetAlpha(0.0f);
     }
   
     void SetAlpha(float alpha) {
-      GetComponent<UnityEngine.UI.Image>().color = Color.Lerp(Color.clear, onColor, alpha);
+      if (_image != null) { _image.color = Color.Lerp(Color.clear, onColor, alpha); }
     }
   
     /** The connection state of the controller. */

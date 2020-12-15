@@ -209,10 +209,11 @@ namespace Leap.Unity {
       Handles.color = interactionZoneColor;
 
       Vector3 origin = target.transform.TransformPoint(controllerOffset);
-      getLocalGlobalPoint(-1, 1, 1, box_width, box_depth, box_radius, out Vector3 local_top_left, out Vector3 top_left);
-      getLocalGlobalPoint(1, 1, 1, box_width, box_depth, box_radius, out Vector3 local_top_right, out Vector3 top_right);
-      getLocalGlobalPoint(-1, 1, -1, box_width, box_depth, box_radius, out Vector3 local_bottom_left, out Vector3 bottom_left);
-      getLocalGlobalPoint(1, 1, -1, box_width, box_depth, box_radius, out Vector3 local_bottom_right, out Vector3 bottom_right);
+      Vector3 local_top_left, top_left, local_top_right, top_right, local_bottom_left, bottom_left, local_bottom_right, bottom_right;
+      getLocalGlobalPoint(-1, 1,  1, box_width, box_depth, box_radius, out local_top_left    , out top_left);
+      getLocalGlobalPoint( 1, 1,  1, box_width, box_depth, box_radius, out local_top_right   , out top_right);
+      getLocalGlobalPoint(-1, 1, -1, box_width, box_depth, box_radius, out local_bottom_left , out bottom_left);
+      getLocalGlobalPoint( 1, 1, -1, box_width, box_depth, box_radius, out local_bottom_right, out bottom_right);
 
       Handles.DrawAAPolyLine(origin, top_left);
       Handles.DrawAAPolyLine(origin, top_right);

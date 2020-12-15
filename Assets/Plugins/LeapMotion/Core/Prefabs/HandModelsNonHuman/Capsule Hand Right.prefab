@@ -43,9 +43,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handedness: 1
   _showArm: 1
-  _material: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  _castShadows: 1
+  _material: {fileID: 2100000, guid: 50db6ec9473cfa746a5882bd2a16ced8, type: 2}
   _sphereMesh: {fileID: 4300002, guid: 2f496b1b1bec86743b418551f859020c, type: 3}
   _cylinderResolution: 12
+  _jointRadius: 0.008
+  _cylinderRadius: 0.006
+  _palmRadius: 0.015
 --- !u!114 &11478924
 MonoBehaviour:
   m_ObjectHideFlags: 1

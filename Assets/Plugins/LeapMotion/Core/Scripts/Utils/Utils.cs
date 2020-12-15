@@ -350,7 +350,7 @@ namespace Leap.Unity {
     public static List<T> RequireLen<T>(ref List<T> list, int length) {
       list = Require(ref list);
       list.Clear();
-      while (list.Count < length) { list.Add(default); }
+      while (list.Count < length) { list.Add(default(T)); }
       return list;
     }
 
@@ -1035,7 +1035,7 @@ namespace Leap.Unity {
         UnityEditor.PrefabUtility.GetPrefabInstanceStatus(obj) == UnityEditor.PrefabInstanceStatus.NotAPrefab;
       #else
       // Before 2018.3, use GetPrefabType.
-      return PrefabUtility.GetPrefabType(obj) == PrefabType.Prefab;
+      return UnityEditor.PrefabUtility.GetPrefabType(obj) == UnityEditor.PrefabType.Prefab;
       #endif
       #else
       return false;
