@@ -19,10 +19,7 @@ namespace Leap.Unity {
     private const int THUMB_BASE_INDEX = (int)Finger.FingerType.TYPE_THUMB * 4;
     private const int PINKY_BASE_INDEX = (int)Finger.FingerType.TYPE_PINKY * 4;
 
-    private static int _leftColorIndex = 0;
-    private static int _rightColorIndex = 0;
-    private static Color[] _leftColorList  = { new Color(0.0f, 0.0f, 1.0f), new Color(0.2f, 0.0f, 0.4f), new Color(0.0f, 0.2f, 0.2f) };
-    private static Color[] _rightColorList = { new Color(1.0f, 0.0f, 0.0f), new Color(1.0f, 1.0f, 0.0f), new Color(1.0f, 0.5f, 0.0f) };
+    public Color color = new Color(0.0f, 0.0f, 1.0f);
 
     #pragma warning disable 0649
     [SerializeField]
@@ -122,13 +119,11 @@ namespace Leap.Unity {
     public override void BeginHand() {
       base.BeginHand();
 
-      if (_hand.IsLeft) {
-        _sphereMat.color = _leftColorList[_leftColorIndex];
-        _leftColorIndex = (_leftColorIndex + 1) % _leftColorList.Length;
-      } else {
-        _sphereMat.color = _rightColorList[_rightColorIndex];
-        _rightColorIndex = (_rightColorIndex + 1) % _rightColorList.Length;
-      }
+      //if (_hand.IsLeft) {
+      //  _sphereMat.color = color;
+      //} else {
+      //  _sphereMat.color = color;
+      //}
     }
 
     public override void UpdateHand() {
