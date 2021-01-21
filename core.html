@@ -46,7 +46,7 @@
    <div id="projectname">Unity Modules
    </div>
    <div id="projectbrief">Ultraleap&#39;s Hand Tracking Unity SDK</div>
-   <div id="projectnumber">4.6.0</div>
+   <div id="projectnumber">4.7.1</div>
   </td>
    <td id="searchbar">        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -123,6 +123,7 @@ The core Leap components</h1>
 <h3>The Providers</h3>
 <p>LeapProvider defines the basic interface our modules expect to use to retrieve Frame data. This abstraction allows you to create your own LeapProviders, which is useful when testing or developing in a context where Leap Controller hardware isn't immediately.</p>
 <p>LeapServiceProvider is the class that communicates with the Leap service running on your platform and provides Frame objects containing Leap hands to your application. Generally, any class that needs Hand data from the sensor will need a reference to a LeapServiceProvider to get that data.</p>
+<p>Release 4.7.0. introduces a new tracking model for tracking devices mounted above a screen and facing down towards the user (angled at 30 degress from the vertical), which is currently in <b>preview only</b>. Known as Screentop, this can be selected in the LeapServiceProvider's 'Advanced Options' section, under 'Tracking Optimization'. There is a corresponding Screentop option for viewing the hands in the editor when this tracking mode is selected (Edit Time Pose).</p>
 <p>LeapXRServiceProvider is the specialized component you should use for XR applications. Place this component directly on your XR camera, so that it can correctly account for differences in tracking timing between the sensor and your headset's pose tracking.</p>
 <p>Finally, if your application needs to manually construct hand data for a standard Hand pipeline or filter hand data coming through a LeapServiceProvider, the PostProcessProvider is a handy abstract class you can implement with a single function definition.</p>
 <h3>The standard Hand pipeline</h3>
@@ -179,7 +180,7 @@ FAQ</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Oct 6 2020 22:01:32 for Unity Modules by
+    <li class="footer">Generated on Thu Jan 21 2021 02:34:23 for Unity Modules by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>
