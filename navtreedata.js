@@ -24,19 +24,6 @@ var NAVTREE =
       [ "Interaction types in-depth", "interaction-engine.html#ie-in-depth", null ],
       [ "FAQ", "interaction-engine.html#interaction-engine-faq", null ]
     ] ],
-    [ "Graphic Renderer", "graphic-renderer.html", [
-      [ "High Level Concepts/Features", "graphic-renderer.html#high-level-concepts-and-features", null ],
-      [ "Getting Started", "graphic-renderer.html#getting-started", null ],
-      [ "The Leap Graphic", "graphic-renderer.html#the-leap-graphic", null ],
-      [ "Graphical Features", "graphic-renderer.html#graphical-features", null ],
-      [ "Rendering Methods", "graphic-renderer.html#rendering-methods", null ],
-      [ "Curved Spaces", "graphic-renderer.html#curved-spaces", null ],
-      [ "Preferences", "graphic-renderer.html#preferences", null ],
-      [ "Shader Variants", "graphic-renderer.html#shader-variants", null ],
-      [ "Writing your own shaders", "graphic-renderer.html#writing-your-own-shaders", null ],
-      [ "Graphic Renderer + Interaction Engine", "graphic-renderer.html#gr-plus-ie", null ],
-      [ "FAQ", "graphic-renderer.html#graphic-renderer-faq", null ]
-    ] ],
     [ "Hands Module", "hands-module.html", [
       [ "Autorigging with LeapHandsAutorig", "hands-module.html#hands-auto-rigging-tool", null ],
       [ "Step 1: Setting the Scene", "hands-module.html#hands-auto-rig-step-1", null ],
@@ -49,6 +36,19 @@ var NAVTREE =
       [ "Special upgrade: Files (before June 1st, 2017)", "upgrading-unity-modules.html#upgrades-prior-to-2017-06-01", null ]
     ] ],
     [ "Deprecated Modules", "deprecated-modules.html", null ],
+    [ "(Deprecated) Graphic Renderer", "graphic-renderer.html", [
+      [ "High Level Concepts/Features", "graphic-renderer.html#high-level-concepts-and-features", null ],
+      [ "Getting Started", "graphic-renderer.html#getting-started", null ],
+      [ "The Leap Graphic", "graphic-renderer.html#the-leap-graphic", null ],
+      [ "Graphical Features", "graphic-renderer.html#graphical-features", null ],
+      [ "Rendering Methods", "graphic-renderer.html#rendering-methods", null ],
+      [ "Curved Spaces", "graphic-renderer.html#curved-spaces", null ],
+      [ "Preferences", "graphic-renderer.html#preferences", null ],
+      [ "Shader Variants", "graphic-renderer.html#shader-variants", null ],
+      [ "Writing your own shaders", "graphic-renderer.html#writing-your-own-shaders", null ],
+      [ "Graphic Renderer + Interaction Engine", "graphic-renderer.html#gr-plus-ie", null ],
+      [ "FAQ", "graphic-renderer.html#graphic-renderer-faq", null ]
+    ] ],
     [ "Developer Resources", "developer-resources.html", null ]
   ] ]
 ];

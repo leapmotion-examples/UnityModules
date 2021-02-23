@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Doxygen 1.8.11"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Unity Modules: Graphic Renderer</title>
+<title>Unity Modules: (Deprecated) Graphic Renderer</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -104,10 +104,12 @@ $(document).ready(function(){initNavTree('graphic-renderer.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Graphic Renderer </div>  </div>
+<div class="title">(Deprecated) Graphic Renderer </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h2>Introduction </h2>
+<div class="textblock"><h2>Deprecation Notice </h2>
+<p>&lt;ins&gt;<b>This module is deprecated as of October 6th, 2020. It should still function with Core version 4.4.0 and Unity 2019 versions but future support may degrade.</b>&lt;/ins&gt;</p>
+<h2>Introduction </h2>
 <p>There are a large number of graphical effects that one uses while creating applications. You might want to allow an amulet to glow with magical runes, or give a button a specific <em>squish</em> effect that happens when you press it, or simply change the color of a handle when the user moves their hand close to it. The implementation of these effects is usually fairly straightforward (relative to the complexity of the effect of course!). You might use an emissive mask, a special vertex displacement shader, or simply change the color of the material you are using to render the object.</p>
 <p>However, most of the time you want to apply these effects to multiple objects, not just one! <em>Each</em> of your handles should change their color when you get close to them, not just one! Well that isn't too hard, but there is one thing that becomes difficult. How do I assign different colors to different objects, but still draw them all in one draw call? I must use a different material for each object, because each object is going to have a different color property. And when objects have different materials, they are never drawn with the same draw call. (Note that even when you assign the same material to two different objects, the act of calling renderer.material automatically duplicates the material, resulting in them using different materials and not being drawn in one draw call).</p>
 <p>The Leap Graphic Renderer takes a step back and notices a property of this situation. When we have a bunch of levers, and we want to change the color of them, we are dealing with a situation where <em>most</em> of the data shared between the levers are the same. They use the same shader, they are all normal mapped, they all use the same texture, and they might even use the same mesh! It seems like a shame that despite all of these similarities, the simple fact that one lever has a different color causes any kind of draw call batching or optimization to be thrown out the window. Fundamentally, we have a collection of objects that are very similar, with only slight differences between them.</p>
@@ -563,7 +565,7 @@ FAQ</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jan 21 2021 02:49:41 for Unity Modules by
+    <li class="footer">Generated on Tue Feb 23 2021 02:08:31 for Unity Modules by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

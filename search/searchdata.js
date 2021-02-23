@@ -1,7 +1,7 @@
 var indexSectionsWithContent =
 {
-  0: "01234567cdghiu",
-  1: "01234567",
+  0: "0124567cdghiu",
+  1: "0124567",
   2: "cdghiu"
 };
 

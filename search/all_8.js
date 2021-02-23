@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['core',['Core',['../core.html',1,'']]]
+  ['deprecated_20modules',['Deprecated Modules',['../deprecated-modules.html',1,'']]],
+  ['developer_20resources',['Developer Resources',['../developer-resources.html',1,'']]]
 ];
