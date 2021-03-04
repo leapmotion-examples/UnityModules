@@ -2,7 +2,7 @@
 
 To download Leap Motion's latest stable modules as .unitypackages, visit [our Unity developer site][devsite]. Be sure to also check out our [documentation and API reference][um-docs]!
 
-**This relese of the UnityModules repository is designed to be opened in 2018.4 only**. There is a separate release that supports Unity 2019.4LTS and Unity 2020.2. If you hit an issue with version support, please submit a ticket with any details!
+**This release of the UnityModules repository is designed to be opened in 2018.4 only**. There is a separate release that supports Unity 2019.4LTS and Unity 2020.2. If you hit an issue with version support, please submit a ticket with any details!
 
 Note, two of the scenes will not work in this version of Unity. These are FingerDetectionDemo and VRVisualizer.
 
