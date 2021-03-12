@@ -162,7 +162,7 @@ namespace Leap.Unity.Encoding {
 
       // Fill arm data.
       intoHand.Arm.Fill(ToWorld(new Vector3(0f, 0f, -0.3f), palmPos, palmRot).ToVector(),
-                      ToWorld(new Vector3(0f, 0f, -0.055f), palmPos, palmRot).ToVector(),
+                      ToWorld(new Vector3(0f, 0f, -0.065f), palmPos, palmRot).ToVector(),
                       ToWorld(new Vector3(0f, 0f, -0.125f), palmPos, palmRot).ToVector(),
                       Vector.Zero,
                       0.3f,
