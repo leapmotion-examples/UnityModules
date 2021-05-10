@@ -10,11 +10,6 @@ using UnityEngine;
 
 namespace Leap.Unity.HandsModule {
 
-    [CreateAssetMenu(fileName = "HandBinderBoneDefinitions", menuName = "Ultraleap/HandBinderBoneDefinitions", order = 1)]
-    public class HandBinderBoneDefinitions : ScriptableObject {
-        public BoneDefinitions BoneDefinitions = new BoneDefinitions();
-    }
-
     /// <summary>
     /// Used to define what bones names are valid for each finger
     /// </summary>

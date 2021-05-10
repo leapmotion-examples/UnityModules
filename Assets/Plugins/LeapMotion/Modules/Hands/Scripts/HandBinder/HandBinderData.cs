@@ -36,6 +36,12 @@ namespace Leap.Unity.HandsModule {
         public Vector3 rotation = Vector3.zero;
     }
 
+    [System.Serializable]
+    public class SerializedTransform {
+        public TransformStore transform;
+        public GameObject reference;
+    }
+
     public enum BoundTypes {
         THUMB_METACARPAL,
         THUMB_PROXIMAL,
