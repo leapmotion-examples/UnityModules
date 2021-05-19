@@ -8,6 +8,7 @@
 
 using AOT;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -31,7 +32,7 @@ namespace LeapInternal {
     /// you are working with is being overwritten, consider making a copy,
     /// or turning up the MinPoolSize.
     /// </summary>
-    public static bool EnablePooling = false;
+    public static bool EnablePooling = true;
 
     /// <summary>
     /// Specifies how many objects of a specific type need to be in the pool
@@ -42,10 +43,10 @@ namespace LeapInternal {
     /// </summary>
     public static uint MinPoolSize = 64;
 
-    private static Dictionary<IntPtr, ActiveMemoryInfo> _activeMemory =
-      new Dictionary<IntPtr, ActiveMemoryInfo>();
-    private static Dictionary<PoolKey, Queue<object>> _pooledMemory =
-      new Dictionary<PoolKey, Queue<object>>();
+    private static ConcurrentDictionary<IntPtr, ActiveMemoryInfo> _activeMemory =
+      new ConcurrentDictionary<IntPtr, ActiveMemoryInfo>();
+    private static ConcurrentDictionary<PoolKey, Queue<object>> _pooledMemory =
+      new ConcurrentDictionary<PoolKey, Queue<object>>();
 
     [MonoPInvokeCallback(typeof(Allocate))]
     public static IntPtr Pin(UInt32 size, eLeapAllocatorType typeHint, IntPtr state) {
@@ -87,7 +88,7 @@ namespace LeapInternal {
 
         //Put the information about the newly pinned allocation into the
         //active memory map so it can be retrieved and freed layer.
-        _activeMemory.Add(ptr, new ActiveMemoryInfo() {
+        _activeMemory.TryAdd(ptr, new ActiveMemoryInfo() {
           handle = handle,
           key = key
         });
@@ -112,7 +113,9 @@ namespace LeapInternal {
         }
 
         //Then we remove the pointer from the active memory map
-        _activeMemory.Remove(ptr);
+        ActiveMemoryInfo value;
+
+        _activeMemory.TryRemove(ptr, out value);
 
         //Finally we unpin the memory
         info.handle.Free();
