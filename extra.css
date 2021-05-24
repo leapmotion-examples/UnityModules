@@ -386,6 +386,14 @@ div.header {
 	display: block;
 }
 
+/* Align .webm video tags for the IE page example scenes. */
+.ie-hands-video {
+	margin: 0 auto;
+  width: 800px;
+  height: 450px;
+	display: block;
+}
+
 
 /* Remove gradients and various default effects on info boxes in generated
  * docs. */

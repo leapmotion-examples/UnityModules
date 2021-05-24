@@ -148,10 +148,10 @@ A basic set of Leap hands</h1>
 <h2>HandModel Implementations</h2>
 <p>HandModel implementations get automatically pooled by the Hand Pool, but must be added manually as groups in your Hand Pool in order to function. Drop in the prefabs and then add references to the prefabs in your HandPool component to get these hands to render.</p>
 <div class="image">
-<img src="RiggedHands.png" alt="RiggedHands.png"/>
+<img src="images/RiggedHands.png" alt="RiggedHands.png"/>
 <div class="caption">
 Rigged Hands</div></div>
-<p> A recent addition to the Core assets, Rigged Hands are the standard hands we use at Leap when building demos or VR content. They are implemented as HandModels, which means they need to be added as an group in your LeapHandController object's HandPool in order to function. If you're interested in using a custom hand mesh with a SkinnedMeshRenderer similarly to the Rigged Hands, you'll want to check out the <a class="el" href="hands-module.html">Hands Module</a>.</p>
+<p> A recent addition to the Core assets, Rigged Hands are the standard hands we use at Leap when building demos or VR content. They are implemented as HandModels, which means they need to be added as an group in your LeapHandController object's HandPool in order to function. If you're interested in using a custom hand mesh with a SkinnedMeshRenderer similarly to the Rigged Hands, you'll want to check out the hands-module.</p>
 <p><b>Note:</b> For Rigged Hands to look correct, you need to either set your <code>Quality Settings/Other/Blend Weights</code> to "4 Bones" (global quality setting) or override the <code>Skinned Mesh Renderer</code>s' Quality setting to "4 Bones" (override quality setting for the Rigged Hands, which should be on by default). If you don't, the rigged hands will exhibit a strange stretch in the palm.</p>
 <div class="image">
 <img src="CapsuleHands.png" alt="CapsuleHands.png"/>
@@ -180,7 +180,7 @@ FAQ</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Feb 23 2021 02:16:25 for Unity Modules by
+    <li class="footer">Generated on Mon May 24 2021 13:47:23 for Unity Modules by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>
