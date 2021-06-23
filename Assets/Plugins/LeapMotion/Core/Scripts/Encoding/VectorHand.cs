@@ -114,6 +114,8 @@ namespace Leap.Unity.Encoding {
 
       // Fill fingers.
       for (int fingerIdx = 0; fingerIdx < 5; fingerIdx++) {
+        float fingerLength = 0f;
+
         for (int jointIdx = 0; jointIdx < 4; jointIdx++) {
           boneIdx   = fingerIdx * 4 + jointIdx;
           prevJoint = jointPositions[fingerIdx * 5 + jointIdx];
@@ -137,12 +139,15 @@ namespace Leap.Unity.Encoding {
           prevJoint = ToWorld(prevJoint, palmPos, palmRot);
           boneRot = palmRot * boneRot;
 
+          float length = (prevJoint - nextJoint).magnitude;
+          if (jointIdx != 0) fingerLength += length;
+
           intoHand.GetBone(boneIdx).Fill(
             prevJoint: prevJoint.ToVector(),
             nextJoint: nextJoint.ToVector(),
             center: ((nextJoint + prevJoint) / 2f).ToVector(),
             direction: (palmRot * Vector3.forward).ToVector(),
-            length: (prevJoint - nextJoint).magnitude,
+            length: length,
             width: 0.01f,
             type: (Bone.BoneType)jointIdx,
             rotation: boneRot.ToLeapQuaternion());
@@ -155,7 +160,7 @@ namespace Leap.Unity.Encoding {
           tipPosition: nextJoint.ToVector(),
           direction: (boneRot * Vector3.forward).ToVector(),
           width: 1f,
-          length: 1f,
+          length: fingerLength,
           isExtended: true,
           type: (Finger.FingerType)fingerIdx);
       }
@@ -180,7 +185,7 @@ namespace Leap.Unity.Encoding {
         grabStrength:           0.5f,
         grabAngle:              100f,
         pinchStrength:          0.5f,
-        pinchDistance:          50f,
+        pinchDistance:          (jointPositions[4] - jointPositions[9]).magnitude * 1000,
         palmWidth:              0.085f,
         isLeft:                 isLeft,
         timeVisible:            1f,
@@ -219,7 +224,7 @@ namespace Leap.Unity.Encoding {
     /// the camera-local hand rotation uses 4 bytes, and each joint position component is
     /// encoded in hand-local space using 3 bytes.
     /// </summary>
-    public int numBytesRequired { get { return 86; } }
+    public int numBytesRequired { get { return 92; } }
     public const int NUM_BYTES = 86;
     
     /// <summary>
@@ -248,7 +253,7 @@ namespace Leap.Unity.Encoding {
       // Palm position and rotation.
       for (int i = 0; i < 3; i++) {
         palmPos[i] = Convert.ToSingle(
-                       BitConverterNonAlloc.ToInt16(bytes, ref offset))
+                       BitConverterNonAlloc.ToInt32(bytes, ref offset))
                      / 4096f;
       }
       palmRot = Utils.DecompressBytesToQuat(bytes, ref offset);
@@ -287,7 +292,7 @@ namespace Leap.Unity.Encoding {
       
       // Palm position, each component compressed 
       for (int i = 0; i < 3; i++) {
-        BitConverterNonAlloc.GetBytes(Convert.ToInt16(palmPos[i] * 4096f),
+        BitConverterNonAlloc.GetBytes(Convert.ToInt32(palmPos[i] * 4096f),
                                       bytesToFill,
                                       ref offset);
       }
