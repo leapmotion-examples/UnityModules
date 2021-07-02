@@ -1,8 +1,6 @@
 # Getting Started {#mainpage}
 
-UnityModules packages from our developer website support Unity 5.6.2, 2017.1-4, and 2018.1.
-
-The UnityModules repository, however, expects Unity 2017.3 and up. If you are sourcing UnityModules directly from this repository, your mileage may vary with earlier versions of Unity.
+The UnityModules repository is designed to be opened in 2019.2. However, the most recent release (4.8.0) has been tested with Unity 2019.4 LTS and Unity 2020.2. If you are sourcing UnityModules directly from this repository, your mileage may vary with earlier versions of Unity.
 
 # Installing the modules {#installing-unity-modules}
 
