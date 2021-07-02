@@ -13,7 +13,7 @@ Note that if you are upgrading Core, it is recommended that you also ensure your
 
 Core `4.4.0` simplifies the Rig Hierarchy, so projects that used older versions of Leap Motion VR rigs in their scenes are likely out-of-date. After pulling in the new Core and modules via the normal upgrade process, you'll want to run the Leap Rig Upgrader tool to detect and automatically upgrade old Leap rigs in these projects.
 
-To upgrade a rig, load the scene containing the rig and run the scanner found in the Leap Motion Unity SDK window (`Window/Leap Motion`). Any rigs that can be automatically upgraded will be detected in the current scene, and you can upgrade them with one click, or review the pending changes and make them yourself. If you encounter any issues with the auto-upgrader, please report them in the [Developer Forum][devforum].
+To upgrade a rig, load the scene containing the rig and run the scanner found in the Ultraleap Unity SDK window (`Window/Leap Motion`). Any rigs that can be automatically upgraded will be detected in the current scene, and you can upgrade them with one click, or review the pending changes and make them yourself. If you encounter any issues with the auto-upgrader, please report them in the [Developer Forum][devforum].
 
 The new rigs should be much easier to understand on their own. For a detailed description of the new standard rig, see the @ref xr-rig-setup section.
 
@@ -21,9 +21,9 @@ The new rigs should be much easier to understand on their own. For a detailed de
 
 # Special upgrade: Files (before June 1st, 2017) {#upgrades-prior-to-2017-06-01}
 
-If your project contains modules released prior to June 1st, 2017, your project's Leap Motion files are slightly more spread out, so you'll want to make sure you delete them all before pulling anything in from a more recent Unity Modules package.
+If your project contains modules released prior to June 1st, 2017, your project's Ultraleap files are slightly more spread out, so you'll want to make sure you delete them all before pulling anything in from a more recent Unity Modules package.
 
-Leap Motion's Unity Modules prior to June 1st placed its files in the following locations in your Assets folder:
+Ultraleap's Unity Modules prior to June 1st placed its files in the following locations in your Assets folder:
 
 - Core: `Assets/LeapMotion` and `Assets/Plugins`
 - Modules: `Assets/LeapMotionModules`

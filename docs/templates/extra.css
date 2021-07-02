@@ -7,7 +7,8 @@
 :root {
   /* Color palette. */
   --dark:         #141414;
-  --leap-green:   #5da800;
+  --ultraleap-green:   #8cea28;
+  --ultraleap-purple:  #682bd9;
   --dark-green:   #4e850f;
   --less-light:   #bfbfbf;
   --medium-gray:  #dddddd;
@@ -20,14 +21,14 @@
   --content-bg:   var(--very-light);
   --search-bg:    var(--light);
 
-  --link-color:   var(--leap-green);
+  --link-color:   var(--ultraleap-purple);
   --border-color: #cecece;
   --member-header-bg: var(--body-bg);
 
   /* Fonts. */ 
-  --title-font-family: 'Roboto Slab';
-  --main-font-family: 'Lato';
-  --backup-font-family: sans-serif;
+  --title-font-family: 'Now';
+  --main-font-family: 'Now';
+  --backup-font-family: 'Lato';
 
   /* Basic layout parameters. */
   --sidebar-width: 330px;
@@ -44,19 +45,19 @@ a, a.el {
 
 .title {
 	font-family: var(--title-font-family), serif !important;
-	font-size: 22px;
-	color: #2c2c2c;
+	font-size: 28px;
+	color: var(--ultraleap-green); /* #2c2c2c; */
 }
 
 h1 {
-	font-size: 22px;
+	font-size: 28px;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--title-font-family), serif;
   margin-top: 2em;
   margin-bottom: 1em;
-	color: #404040;
+	color: var(--ultraleap-green); /* #404040; */
 }
 
 ul {
@@ -65,7 +66,7 @@ ul {
 
 p, li {
 	font-size: 16px;
-	font-weight: normal;
+	font-weight: 300;
 	color: #404040;
 	line-height: 24px;
 }
@@ -157,7 +158,7 @@ div.line {
 #projectbrief {
   font: inherit !important;
   font-family: var(--main-font-family) !important;
-  font-size: 12pt !important;
+  font-size: 14pt !important;
   text-align: center;
   margin-top: 0.25em;
   color: var(--less-light);
@@ -167,10 +168,10 @@ div.line {
 #projectnumber {
   font: inherit !important;
   font-family: var(--main-font-family) !important;
-  font-size: 16pt !important;
+  font-size: 14pt !important;
   text-align: center;
   margin-top: 0.25em;
-  color: var(--leap-green);
+  color: var(--ultraleap-green);
   margin-bottom: 0.5em;
 }
 
@@ -226,7 +227,7 @@ div.line {
 	left: 300px !important;
 	margin-top: -6px !important;
 	margin-left: 0px !important;
-	border: 0px solid var(--leap-green);
+	border: 0px solid var(--ultraleap-green);
 	border-radius: 0px;
 	background-color: var(--light);
 }
@@ -297,7 +298,7 @@ div.line {
 #nav-tree .selected {
   background-image: none;
   text-shadow: none;
-  background-color: var(--leap-green);
+  background-color: var(--ultraleap-green);
 }
 
 /* Override navbar items' font and color. */
@@ -455,7 +456,7 @@ h1.glow, h2.glow, h3.glow, h4.glow, h5.glow, h6.glow {
 	background-color: inherit;
 }
 span.mlabel {
-  background-color: var(--leap-green);
+  background-color: var(--ultraleap-green);
   border: none;
 }
 .memItemRight code {

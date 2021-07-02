@@ -35,7 +35,7 @@ When you add an [InteractionBehaviour][ref_InteractionBehaviour] component to an
 The first example in the Interaction Engine package showcases the default behavior of a handful of different objects when they first become interaction objects.
 
 [devsite]: https://developer.leapmotion.com/unity "Leap Motion Unity Developer site"
-[blocks]: https://www.youtube.com/watch?v=oZ_53T2jBGg&t=1m11s "Leap Motion Blocks demo"
+[blocks]: https://www.youtube.com/watch?v=oZ_53T2jBGg&t=1m11s "Ultraleap Blocks demo"
 [rigidbody]: https://docs.unity3d.com/ScriptReference/Rigidbody.html
 [collider]: https://docs.unity3d.com/ScriptReference/Collider.html
 
@@ -63,7 +63,7 @@ If you don't already have a Leap-enabled XR camera rig to your scene, you can fo
 
 If you aren't familiar with Leap-enabled XR rigs, check out @ref xr-rig-setup.
 
-It is possible to use a custom camera rig in combination with Leap Motion. If you'd like to use something other than the **Leap Rig** prefab, you should make sure you have a camera tagged MainCamera in your scene, and that it has children with the same components and linkages that you can find beneath the Camera object in the **Leap Rig** prefab. Note that the Interaction Engine on its own does not render hands, it only instantiates physical representations of hands.
+It is possible to use a custom camera rig in combination with Ultraleap hand tracking. If you'd like to use something other than the **Leap Rig** prefab, you should make sure you have a camera tagged MainCamera in your scene, and that it has children with the same components and linkages that you can find beneath the Camera object in the **Leap Rig** prefab. Note that the Interaction Engine on its own does not render hands, it only instantiates physical representations of hands.
 
 At Leap, we tend to put player-centric scripts in dedicated GameObjects that are siblings of the Main Camera object. For example, the AttachmentHands script offers a convenient way to attach arbitrary objects to any of the joints in a Leap hand representation, and it belongs in such a sibling GameObject. To create AttachmentHands for use in your scene, you would:
 - Create a new GameObject in your scene
@@ -411,7 +411,7 @@ A: Yes, we support this via code in the [InteractionManager][ref_InteractionMana
 
 **Q: Will the Interaction Engine work at arbitrary player scales?**
 
-A: Currently, no. The Interaction Engine works best at "real-world" scale: 1 Unity distance unit = 1 real-world meter. All of Leap Motion's Unity assets follow this rule, so you're fine if you keep our prefabs at unit scale. If you scale the player too far away from unit scale, certain interactions may stop functioning properly. We would like to support arbitrary interaction scales, but there is no timeline for this feature currently.
+A: Currently, no. The Interaction Engine works best at "real-world" scale: 1 Unity distance unit = 1 real-world meter. All of Ultraleaps's Unity assets follow this rule, so you're fine if you keep our prefabs at unit scale. If you scale the player too far away from unit scale, certain interactions may stop functioning properly. We would like to support arbitrary interaction scales, but there is no timeline for this feature currently.
 
 **Q: How can I effectively grasp very small objects?**
 

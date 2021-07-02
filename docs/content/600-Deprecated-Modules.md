@@ -14,6 +14,12 @@ These modules are **still compatible** as of Core 4.3.0, but may become unsuppor
   
 [ui-input]: https://developer.leapmotion.com/releases/ui-input-module-121 "(Deprecated) UI Input Module"
 
+- [Graphic Renderer Module 0.1.3][graphic-renderer]
+  
+  With the Graphic Renderer, you can **render an entire curved, 3D, dynamic interface in 1-3 draw calls**. The Graphic Renderer can be used in tandem with the Interaction Engine; 
+
+[graphic-renderer]: https://developer.leapmotion.com/releases/graphic-renderer-013 "(Deprecated) Graphic Renderer Module"
+
 - [Attachments Module 1.0.5][attachments-module]
 
   The latest version of Core (since 4.2.0) contains an AttachmentHands.cs script that reproduces the functionality of the Attachment Module hands with a customized inspector interface. Attachment Hands as a concept has migrated to Core to satisfy dependencies for other Modules and examples.

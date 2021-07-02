@@ -1,6 +1,6 @@
 ﻿# Guide - Hands Module {#guide-hands-module}
 
-Our Hands Module is a set of scripts to help you bind leap motion data to your own hand assets.
+Our Hands Module is a set of scripts to help you bind Ultraleap hand tracking data to your own hand assets.
 
 You continue to have the ability to auto–rig a wide array of FBX hand assets with one or two button presses. You can also quickly iterate between a modelling package and seeing the models driven by live hand motion in Unity. A powerful benefit.
 
@@ -16,7 +16,7 @@ This page provides a detailed overview of how to use our new Hand Binder pipelin
 
 # Hand Binder {#hand-binder}
 
-The new Hand Binder Monobehavior script is the connection between leap motion data and the game objects you want to attach to finger bones.
+The new Hand Binder Monobehavior script is the connection between ultraleap hand tracking data and the game objects you want to attach to finger bones.
 
 Note: The hand binder is a complete overhaul of the previous Hand Rigging solution and is intended to replace it.
 

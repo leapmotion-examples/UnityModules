@@ -2,13 +2,13 @@
 
 # Downloads
 
-You can always find our latest Unity SDK packages on our [Leap Motion Developer Downloads][dev-downloads] site. There, you can also find resources for other engines, such as our Unreal Engine SDK.
+You can always find our latest Unity SDK packages on our [Ultraleap Developer Downloads][dev-downloads] site. There, you can also find resources for other engines, such as our Unreal Engine SDK.
 
 [dev-downloads]: https://developer.leapmotion.com/unity
 
 # Forums
 
-Need help with our Unity assets, or have other questions not answered in this documentation? Come join our developer community on our [Leap Motion developer forums][dev-forums]!
+Need help with our Unity assets, or have other questions not answered in this documentation? Come join our developer community on our [Ultraleap developer forums][dev-forums]!
 
 [dev-forums]: https://forums.leapmotion.com/c/development 
 

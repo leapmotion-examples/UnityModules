@@ -1,6 +1,6 @@
 # Core {#core}
 
-Core contains the fundamental assets necessary to get Leap hand data into your Unity project. The plugins we package with Core handle all the work of talking to the Leap Motion service that runs on your platform and provides hand data to your application from the sensor.
+Core contains the fundamental assets necessary to get Leap hand data into your Unity project. The plugins we package with Core handle all the work of talking to the Ultraleap service that runs on your platform and provides hand data to your application from the sensor.
 
 Core also contains a small set of prefabs to get you prototyping with a VR rig and Leap hands right away. You can create a new scene and drag in the **Leap Rig** prefab to immediately get an XR camera rig with Leap hand support, or you can drag in the LeapHandController prefab to work with a desktop-mounted Leap Motion Controller.
 
@@ -67,7 +67,7 @@ Our standard rig prefab places the Hand Model Manager as a direct child of the r
 
 ![A basic XR rig setup with Capsule Hands.](@ref images/Basic_XR_Rig.png)
 
-The **Leap Rig** prefab is a ready-made XR rig to get you started building an XR application with Leap Motion. It consists of the following objects:
+The **Leap Rig** prefab is a ready-made XR rig to get you started building an XR application with Ultraleap hand tracking. It consists of the following objects:
 
 The **Leap Rig** is the root object. This is the Transform you should manipulate if you want to move your player in the XR space. This object contains the _optional_ XRHeightOffset script by default, which offers a simple way to get your player's head at a consistent height across the different XR platforms built into Unity.
 
