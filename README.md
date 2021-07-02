@@ -1,6 +1,6 @@
-# Leap Motion Unity Modules
+# Ultraleap Unity Modules
 
-To download Leap Motion's latest stable modules as .unitypackages, visit [our Unity developer site][devsite]. Be sure to also check out our [documentation and API reference][um-docs]!
+To download Ultraleap's latest stable modules as .unitypackages, visit [our Unity developer site][devsite]. Be sure to also check out our [documentation and API reference][um-docs]!
 
 The UnityModules repository is designed to be opened in 2019.2. Our release packages should support 5.6.2 and up, for stable Unity releases. However, this release has been tested with Unity 2019.4 LTS and Unity 2020.2. There is a separate release that supports Unity 2018.4 LTS. If you hit an issue with version support, please submit a ticket with any details!
 
@@ -14,11 +14,11 @@ Since Unity Modules 4.5.0, our [releases page][releases] on this repository is t
 
 ## License
 
-Use of Leap Motion's UnityModules is subject to the [Apache V2 License Agreement][apache].
+Use of Ultraleap's UnityModules is subject to the [Apache V2 License Agreement][apache].
 
 ## This repository
 
-This repository contains code for Leap Motion's Unity Modules, easy-to-use tools for integrating the Leap Motion Controller in Unity projects, and various utilities for VR and AR projects.
+This repository contains code for Ultraleap's Unity Modules, easy-to-use tools for integrating the Ultraleap camera hardware in Unity projects, and various utilities for VR and AR projects.
 
 **Note that this repository also contains code for work-in-progress modules, tentative modules, or older modules that may be unsupported.** We recommend using the packages available on the [developer site][devsite] unless you're planning on contributing or you are otherwise feeling *particularly hardcore*.
 
